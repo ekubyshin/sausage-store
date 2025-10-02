@@ -30,19 +30,37 @@ jobs:
 
     - name: Run tests
       working-directory: backend        
-      run: mvn test
+      run: mvn test -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
 
     - name: Checkstyle
       working-directory: backend        
-      run: mvn checkstyle:check
+      run: mvn checkstyle:check -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
 
     - name: SpotBugs
       working-directory: backend
       continue-on-error: true        
-      run: mvn spotbugs:check
+      run: mvn spotbugs:check -Dversion.application=${APP_VERSION}.${GITHUB_SHA:0:7}
 
     - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
         name: jar-artifact
         path: backend/target/*.jar
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: backend/target/surefire-reports/
+
+    - name: Upload Checkstyle Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: checkstyle-report
+        path: backend/target/checkstyle-result.xml
+
+    - name: Upload SpotBugs Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: spotbugs-report
+        path: backend/target/spotbugsXml.xml 
